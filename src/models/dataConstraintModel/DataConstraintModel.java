@@ -38,7 +38,19 @@ public class DataConstraintModel {
 	public static final Symbol div = new Symbol(Parser.DIV, 2, Symbol.Type.INFIX);
 	public static final Symbol minus = new Symbol(Parser.MINUS, 1);
 	public static final Symbol mod = new Symbol(Parser.MOD, 2, Symbol.Type.INFIX, "%", Symbol.Type.INFIX);
-	public static final Symbol eq = new Symbol(Parser.EQ, 2, Symbol.Type.INFIX, "==", Symbol.Type.INFIX);
+	public static final Symbol eq = new Symbol(Parser.EQ, 2, Symbol.Type.INFIX, new Symbol.IImplGenerator() {
+		@Override
+		public String generate(Type type, Type[] childrenTypes, String[] children, String[] childrenSideEffects, String[] sideEffect) {
+			for (String s: childrenSideEffects) {
+				sideEffect[0] += s;
+			}
+			if (childrenTypes[0].equals(typeString) && childrenTypes[1].equals(typeString)) {
+				return children[0] + ".equals(" + children[1] + ")";
+			}
+			return "(" + children[0] + "==" + children[1] + ")";
+		}
+		
+	});
 	public static final Symbol neq = new Symbol(Parser.NEQ, 2, Symbol.Type.INFIX, "!=", Symbol.Type.INFIX);
 	public static final Symbol gt = new Symbol(Parser.GT, 2, Symbol.Type.INFIX, ">", Symbol.Type.INFIX);
 	public static final Symbol lt = new Symbol(Parser.LT, 2, Symbol.Type.INFIX, "<", Symbol.Type.INFIX);
