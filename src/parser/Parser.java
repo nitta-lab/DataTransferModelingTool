@@ -21,6 +21,7 @@ import parser.Parser.Token;
 import parser.exceptions.ExpectedAssignment;
 import parser.exceptions.ExpectedChannel;
 import parser.exceptions.ExpectedChannelName;
+import parser.exceptions.ExpectedDoubleQuotation;
 import parser.exceptions.ExpectedEquals;
 import parser.exceptions.ExpectedInOrOutOrRefKeyword;
 import parser.exceptions.ExpectedLeftCurlyBracket;
@@ -90,12 +91,12 @@ public class Parser {
 	}
 	
 	public DataTransferModel doParse() 
-			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment {
+			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment, ExpectedDoubleQuotation {
 		return parseDataFlowModel();
 	}
 
 	public DataTransferModel parseDataFlowModel() 
-			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment {
+			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment, ExpectedDoubleQuotation {
 		DataTransferModel model = new DataTransferModel();
 		DataTransferChannel channel;
 		while ((channel = parseChannel(model)) != null) {
@@ -113,7 +114,7 @@ public class Parser {
 			ExpectedLeftCurlyBracket, ExpectedRightBracket, ExpectedAssignment,
 			ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, 
 			ExpectedChannel, ExpectedChannelName, ExpectedInOrOutOrRefKeyword, 
-			ExpectedStateTransition, ExpectedEquals
+			ExpectedStateTransition, ExpectedEquals, ExpectedDoubleQuotation
 	{
 		if (!stream.hasNext()) return null;
 		if (stream.checkNext().equals(RIGHT_CURLY_BRACKET)) return null;
@@ -163,7 +164,7 @@ public class Parser {
 
 	public void parseInit(DataTransferModel model) 
 			throws 
-			ExpectedLeftCurlyBracket, ExpectedAssignment, ExpectedRHSExpression, WrongRHSExpression, ExpectedRightBracket 
+			ExpectedLeftCurlyBracket, ExpectedAssignment, ExpectedRHSExpression, WrongRHSExpression, ExpectedRightBracket, ExpectedDoubleQuotation 
 	{
 		String leftBracket = stream.next();
 		if (!leftBracket.equals(LEFT_CURLY_BRACKET)) throw new ExpectedLeftCurlyBracket(stream.getLine());
@@ -197,7 +198,7 @@ public class Parser {
 	public ChannelMember parseChannelMember(DataTransferModel model, final String inOrOutOrRef) 
 			throws 
 			ExpectedRightBracket, ExpectedStateTransition, ExpectedEquals, 
-			ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression
+			ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedDoubleQuotation
 	{
 		if (!stream.hasNext()) throw new ExpectedStateTransition(stream.getLine());
 		Expression leftTerm = parseTerm(stream, model);
@@ -250,8 +251,7 @@ public class Parser {
 		return channelMember;
 	}
 
-	public Expression parseTerm(TokenStream stream, DataTransferModel model) 
-			throws ExpectedRightBracket
+	public Expression parseTerm(TokenStream stream, DataTransferModel model) throws ExpectedRightBracket, ExpectedDoubleQuotation
 	{
 		ArrayList<Expression> expressions = new ArrayList<>();
 		ArrayList<Symbol> operators = new ArrayList<>();
@@ -272,6 +272,10 @@ public class Parser {
 				} else if (leftBracketOrMinusOrNeg.equals(NEG)) {
 					minusOrNeg = DataTransferModel.neg;
 					symbolName = stream.next();
+				} else if (leftBracketOrMinusOrNeg.equals(DOUBLE_QUOT)) {
+					symbolName = DOUBLE_QUOT + stream.next() + DOUBLE_QUOT;
+					String doubleQuot = stream.next();
+					if (!doubleQuot.equals(DOUBLE_QUOT)) throw new ExpectedDoubleQuotation(stream.getLine());
 				} else {
 					symbolName = leftBracketOrMinusOrNeg;
 				}
@@ -311,9 +315,9 @@ public class Parser {
 							}
 						}
 					} catch (NumberFormatException e) {
-						if (symbolName.startsWith("\"") && symbolName.endsWith("\"")) {
+						if (symbolName.startsWith(DOUBLE_QUOT) && symbolName.endsWith(DOUBLE_QUOT)) {
 							// a string value
-							exp = new Constant(symbolName, DataTransferModel.typeString);
+							exp = new Constant(symbolName.substring(1, symbolName.length() - 1), DataTransferModel.typeString);
 						} else {
 							// a variable
 							if (stream.checkNext() != null && stream.checkNext().equals(COLON)) {

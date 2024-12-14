@@ -22,7 +22,20 @@ public class DataConstraintModel {
 	public static final Type typeFloat = new Type("Float", "float", typeInt);
 	public static final Type typeDouble = new Type("Double", "double", typeFloat);
 	public static final Type typeBoolean = new Type("Bool", "boolean");
-	public static final Type typeString = new Type("Str", "String");
+	public static final Type typeString = new Type("Str", "String") {
+		public String valueToRepresentation(Object value) {
+			if (value instanceof String) {
+				return Parser.DOUBLE_QUOT + (String) value + Parser.DOUBLE_QUOT;
+			}
+			return value.toString();
+		}
+		public Object representationToValue(String representation) {
+			if (representation.startsWith(Parser.DOUBLE_QUOT) && representation.endsWith(Parser.DOUBLE_QUOT)) {
+				return representation.substring(1, representation.length() - 1);
+			}
+			return representation;
+		}
+	};
 	public static final Type typeList = new Type("List", "ArrayList", "List");
 	public static final Type typeListInt = new Type("List", "ArrayList<>", "List<Integer>", typeList);
 	public static final Type typeListStr = new Type("List", "ArrayList<>", "List<String>", typeList);
@@ -481,7 +494,7 @@ public class DataConstraintModel {
 		for (ResourcePath resource: resourcePaths.values()) {
 			String initializer = resource.getInitText();
 			if (initializer != null) {
-				init += initializer;
+				init += resource.toString() + " := " + initializer + "\n";
 			}
 		}
 		if (init.length() > 0) {

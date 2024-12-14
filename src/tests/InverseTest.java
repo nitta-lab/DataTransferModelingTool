@@ -19,6 +19,7 @@ import models.algebra.Variable;
 import models.dataFlowModel.DataTransferModel;
 import parser.Parser;
 import parser.Parser.TokenStream;
+import parser.exceptions.ExpectedDoubleQuotation;
 import parser.exceptions.ExpectedRightBracket;
 
 public class InverseTest {
@@ -83,7 +84,7 @@ public class InverseTest {
 				assertFalse(inv.contains(v));
 				System.out.println(rhsVars3.get(vPos) + " = " + inv);
 			}			
-		} catch (ExpectedRightBracket e) {
+		} catch (ExpectedRightBracket | ExpectedDoubleQuotation e) {
 			e.printStackTrace();
 		}
 	}

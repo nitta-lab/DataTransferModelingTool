@@ -11,6 +11,7 @@ import parser.Parser;
 import parser.exceptions.ExpectedAssignment;
 import parser.exceptions.ExpectedChannel;
 import parser.exceptions.ExpectedChannelName;
+import parser.exceptions.ExpectedDoubleQuotation;
 import parser.exceptions.ExpectedEquals;
 import parser.exceptions.ExpectedInOrOutOrRefKeyword;
 import parser.exceptions.ExpectedLeftCurlyBracket;
@@ -59,6 +60,9 @@ public class UpdateConflictCheckTest {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ExpectedAssignment e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ExpectedDoubleQuotation e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

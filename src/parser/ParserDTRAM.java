@@ -14,6 +14,7 @@ import models.dataFlowModel.DataTransferModel;
 import parser.exceptions.ExpectedAssignment;
 import parser.exceptions.ExpectedChannel;
 import parser.exceptions.ExpectedChannelName;
+import parser.exceptions.ExpectedDoubleQuotation;
 import parser.exceptions.ExpectedEquals;
 import parser.exceptions.ExpectedFormulaChannel;
 import parser.exceptions.ExpectedGeometry;
@@ -63,7 +64,7 @@ public class ParserDTRAM extends Parser {
 	 * @param reader
 	 */
 	public DataTransferModel doParseModel() 
-			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment, ExpectedModel, ExpectedGeometry {
+			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment, ExpectedModel, ExpectedGeometry, ExpectedDoubleQuotation {
 		DataTransferModel model = getParsedModel();
 		return model;
 	}
@@ -85,7 +86,7 @@ public class ParserDTRAM extends Parser {
 	 * @param stream
 	 */
 	private DataTransferModel getParsedModel()
-			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment, ExpectedModel, ExpectedGeometry  {
+			throws ExpectedRightBracket, ExpectedChannel, ExpectedChannelName, ExpectedLeftCurlyBracket, ExpectedInOrOutOrRefKeyword, ExpectedStateTransition, ExpectedEquals, ExpectedRHSExpression, WrongLHSExpression, WrongRHSExpression, ExpectedAssignment, ExpectedModel, ExpectedGeometry, ExpectedDoubleQuotation  {
 
 		if (!stream.hasNext()) throw new NullPointerException();
 
