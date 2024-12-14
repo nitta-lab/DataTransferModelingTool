@@ -30,6 +30,7 @@ import models.dataFlowModel.PushPullValue;
 import models.visualModel.FormulaChannel;
 import parser.Parser;
 import parser.Parser.TokenStream;
+import parser.exceptions.ExpectedDoubleQuotation;
 import parser.exceptions.ExpectedRightBracket;
 
 public class DataTransferModelingCellEditor  implements mxICellEditor {
@@ -123,7 +124,7 @@ public class DataTransferModelingCellEditor  implements mxICellEditor {
 						Expression exp = parser.parseTerm(stream, editor.getModel());
 						((FormulaChannel) ch).setFormula(formula);
 						((FormulaChannel) ch).setFormulaTerm(exp);
-					} catch (ExpectedRightBracket e) {
+					} catch (ExpectedRightBracket | ExpectedDoubleQuotation e) {
 						e.printStackTrace();
 					}
 				}

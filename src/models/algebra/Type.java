@@ -79,6 +79,15 @@ public class Type {
 		}
 		return false;
 	}
+	
+	public String valueToRepresentation(Object value) {
+		if (value instanceof String) return (String) value;
+		return value.toString();
+	}
+	
+	public Object representationToValue(String representation) {
+		return representation;
+	}
 
 	public Memento createMemento() {
 		return new Memento(implementationTypeName, interfaceTypeName, parentTypes);

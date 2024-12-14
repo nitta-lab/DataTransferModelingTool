@@ -9,7 +9,7 @@ public class Constant extends Term {
 	}
 	
 	public Constant(String value, Type type) {
-		super(new Symbol(value, 0), new ArrayList<Expression>());
+		super(new Symbol((type == null ? value: type.valueToRepresentation(value)), 0), new ArrayList<Expression>());
 		symbol.setSignature(new Type[] {type});
 	}
 	
@@ -34,6 +34,13 @@ public class Constant extends Term {
 		return symbol.getName();
 	}
 	
+	public Object getValue() {
+		if (getType() != null) {
+			return getType().representationToValue(symbol.getName());
+		}
+		return symbol.getName();
+	}
+
 	public String toImplementation(String[] sideEffects) {
 		if (symbol.isImplGenerative()) {
 			String exp = symbol.generate(getType(), new Type[] {}, new String[] {}, new String[] {}, sideEffects);

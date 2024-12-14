@@ -50,6 +50,7 @@ import parser.Parser.TokenStream;
 import parser.exceptions.ExpectedAssignment;
 import parser.exceptions.ExpectedChannel;
 import parser.exceptions.ExpectedChannelName;
+import parser.exceptions.ExpectedDoubleQuotation;
 import parser.exceptions.ExpectedEquals;
 import parser.exceptions.ExpectedFormulaChannel;
 import parser.exceptions.ExpectedGeometry;
@@ -187,7 +188,7 @@ public class Editor {
 					return model;
 				} catch (ExpectedChannel | ExpectedChannelName | ExpectedLeftCurlyBracket | ExpectedInOrOutOrRefKeyword
 						| ExpectedStateTransition | ExpectedEquals | ExpectedRHSExpression | WrongLHSExpression
-						| WrongRHSExpression | ExpectedRightBracket | ExpectedAssignment | ExpectedModel | ExpectedGeometry | ExpectedNode | ExpectedResource | ExpectedFormulaChannel | ExpectedIoChannel e) {
+						| WrongRHSExpression | ExpectedRightBracket | ExpectedAssignment | ExpectedModel | ExpectedGeometry | ExpectedNode | ExpectedResource | ExpectedFormulaChannel | ExpectedIoChannel | ExpectedDoubleQuotation e) {
 					e.printStackTrace();
 				}
 			}
@@ -220,7 +221,7 @@ public class Editor {
 				return model;
 			} catch (ExpectedChannel | ExpectedChannelName | ExpectedLeftCurlyBracket | ExpectedInOrOutOrRefKeyword
 					| ExpectedStateTransition | ExpectedEquals | ExpectedRHSExpression | WrongLHSExpression
-					| WrongRHSExpression | ExpectedRightBracket | ExpectedAssignment e) {
+					| WrongRHSExpression | ExpectedRightBracket | ExpectedAssignment | ExpectedDoubleQuotation e) {
 				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
@@ -654,7 +655,7 @@ public class Editor {
 			resetDataFlowGraph();
 		} catch (ExpectedRightBracket | ExpectedChannel | ExpectedChannelName | ExpectedLeftCurlyBracket
 				| ExpectedInOrOutOrRefKeyword | ExpectedStateTransition | ExpectedEquals | ExpectedRHSExpression
-				| WrongLHSExpression | WrongRHSExpression | ExpectedAssignment e) {
+				| WrongLHSExpression | WrongRHSExpression | ExpectedAssignment | ExpectedDoubleQuotation e) {
 			e.printStackTrace();
 		}
 	}

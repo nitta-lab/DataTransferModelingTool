@@ -17,6 +17,7 @@ import parser.*;
 import parser.exceptions.ExpectedAssignment;
 import parser.exceptions.ExpectedChannel;
 import parser.exceptions.ExpectedChannelName;
+import parser.exceptions.ExpectedDoubleQuotation;
 import parser.exceptions.ExpectedEquals;
 import parser.exceptions.ExpectedInOrOutOrRefKeyword;
 import parser.exceptions.ExpectedLeftCurlyBracket;
@@ -41,7 +42,7 @@ public class CodeGeneratorTest {
 				System.out.println(codetree);
 			} catch (ExpectedChannel | ExpectedChannelName | ExpectedLeftCurlyBracket | ExpectedInOrOutOrRefKeyword
 					| ExpectedStateTransition | ExpectedEquals | ExpectedRHSExpression | WrongLHSExpression
-					| WrongRHSExpression | ExpectedRightBracket | ExpectedAssignment e) {
+					| WrongRHSExpression | ExpectedRightBracket | ExpectedAssignment | ExpectedDoubleQuotation e) {
 				e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
