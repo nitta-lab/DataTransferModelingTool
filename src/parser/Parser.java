@@ -411,14 +411,14 @@ public class Parser {
 				// lower priority than add and sub
 				if (first != null) monomials.add(first);
 				Expression firstMonomial = monomials.get(0);
-				i = 1;
+				int j = 1;
 				for (Symbol op2: addSubs) {
-					Expression secondMonomial = monomials.get(i);
+					Expression secondMonomial = monomials.get(j);
 					Term term = new Term(op2);
 					term.addChild(firstMonomial);
 					term.addChild(secondMonomial);
 					firstMonomial = term;
-					i++;
+					j++;
 				}
 				if (rootTerm == null) {
 					rootTerm = new Term(op);
@@ -431,6 +431,7 @@ public class Parser {
 				}
 				monomials.clear();
 				addSubs.clear();
+				first = second;
 			} else {
 				// add or sub ==> new monomial
 				monomials.add(first);
