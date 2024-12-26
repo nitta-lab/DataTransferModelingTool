@@ -340,7 +340,7 @@ public class TypeInference {
 				}
 				for (Term t : terms) {
 					Symbol symbol = t.getSymbol();
-					if (symbol.equals(DataConstraintModel.cons) || symbol.equals(DataConstraintModel.set)) {
+					if (symbol.equals(DataConstraintModel.cons) || symbol.equals(DataConstraintModel.set) || symbol.equals(DataConstraintModel.append)) {
 						// If the root symbol of the term is cons or set.
 						List<Expression> consExps = new ArrayList<>();
 						consExps.add(t);
@@ -351,18 +351,26 @@ public class TypeInference {
 								consExps.add(e);
 								updateExpressionBelonging(expToConsOrSet, e, consExps);
 							}
+						} else if (symbol.equals(DataConstraintModel.append)) {
+							// If the root symbol of the term is append.
+							Expression e = t.getChildren().get(1);
+							consExps.add(e);	// list element
+							updateExpressionBelonging(expToConsOrSet, e, consExps);
+							e = t.getChildren().get(0);
+							consExps.add(e);	// list argument
+							updateExpressionBelonging(expToConsOrSet, e, consExps);	
 						} else {
 							// If the root symbol of the term is set.
 							Expression e = t.getChildren().get(2);
-							consExps.add(e);
+							consExps.add(e);	// list element
 							updateExpressionBelonging(expToConsOrSet, e, consExps);
 							e = t.getChildren().get(0);
-							consExps.add(e);
+							consExps.add(e);	// list argument
 							updateExpressionBelonging(expToConsOrSet, e, consExps);							
 						}
 						Type newType = getExpTypeIfUpdatable(t.getType(), consExps.get(2));
 						if (newType != null) {
-							// If the type of the 2nd argument of cons (1st argument of set) is more concrete than the type of the term.
+							// If the type of the 2nd argument of cons (1st argument of set/append) is more concrete than the type of the term.	
 							t.setType(newType);
 							Map<Integer, Expression> updateCons = getUpdateSet(updateFromConsOrSet, consExps);
 							updateCons.put(System.identityHashCode(t), t);
@@ -371,7 +379,7 @@ public class TypeInference {
 							if (consExps.get(2) != null && consExps.get(2) instanceof Variable) {
 								arg2Type = ((Variable) consExps.get(2)).getType();
 								if (compareTypes(arg2Type, t.getType())) {
-									// If the type of the term is more concrete than the type of the 2nd argument of cons (1st argument of set).
+									// If the type of the term is more concrete than the type of the 2nd argument of cons (1st argument of set/append).
 									((Variable) consExps.get(2)).setType(t.getType());
 									Map<Integer, Expression> updateCons = getUpdateSet(updateFromConsOrSet, consExps);
 									updateCons.put(System.identityHashCode(consExps.get(2)), consExps.get(2));
@@ -379,7 +387,7 @@ public class TypeInference {
 							} else if (consExps.get(2) != null && consExps.get(2) instanceof Term) {
 								arg2Type = ((Term) consExps.get(2)).getType();
 								if (compareTypes(arg2Type, t.getType())) {
-									// If the type of the term is more concrete than the type of the 2nd argument of cons (1st argument of set).
+									// If the type of the term is more concrete than the type of the 2nd argument of cons (1st argument of set/append).
 									((Term) consExps.get(2)).setType(t.getType());
 									Map<Integer, Expression> updateCons = getUpdateSet(updateFromConsOrSet, consExps);
 									updateCons.put(System.identityHashCode(consExps.get(2)), consExps.get(2));
@@ -772,6 +780,33 @@ public class TypeInference {
 						} else {
 							compTypeList.add(null);
 						}
+						Type newTermType = getExpTypeIfUpdatable(termType, mapExps.get(3));
+						if (newTermType != null) {
+							// If the type of the 1st argument of insert is more concrete than the type of the term.
+							t.setType(newTermType);
+							termType = newTermType;
+							Map<Integer, Expression> updateExps = getUpdateSet(updateFromMap, mapExps);
+							updateExps.put(System.identityHashCode(t), t);
+						} else {
+							Type arg3Type = null;
+							if (mapExps.get(3) != null && mapExps.get(3) instanceof Variable) {
+								arg3Type = ((Variable) mapExps.get(3)).getType();
+								if (compareTypes(arg3Type, t.getType())) {
+									// If the type of the term is more concrete than the type of the 1st argument of insert.
+									((Variable) mapExps.get(3)).setType(t.getType());
+									Map<Integer, Expression> updateExps = getUpdateSet(updateFromMap, mapExps);
+									updateExps.put(System.identityHashCode(mapExps.get(3)), mapExps.get(3));
+								}
+							} else if (mapExps.get(3) != null && mapExps.get(3) instanceof Term) {
+								arg3Type = ((Term) mapExps.get(3)).getType();
+								if (compareTypes(arg3Type, t.getType())) {
+									// If the type of the term is more concrete than the type of the 1st argument of insert.
+									((Term) mapExps.get(3)).setType(t.getType());
+									Map<Integer, Expression> updateExps = getUpdateSet(updateFromMap, mapExps);
+									updateExps.put(System.identityHashCode(mapExps.get(3)), mapExps.get(3));
+								}
+							}
+						}
 						if (termType == DataConstraintModel.typeMap || termType == null) {
 							Type newMapType = mapTypes.get(compTypeList);
 							if (newMapType == null) {
@@ -779,9 +814,16 @@ public class TypeInference {
 								newMapType = createNewMapType(compTypeList, DataConstraintModel.typeMap);
 							}
 							t.setType(newMapType);
-							termType = newMapType;
 							Map<Integer, Expression> updateExps = getUpdateSet(updateFromMap, mapExps);
 							updateExps.put(System.identityHashCode(t), t);
+							if (mapExps.get(3) != null && mapExps.get(3) instanceof Variable) {
+								((Variable) mapExps.get(3)).setType(newMapType);
+								updateExps.put(System.identityHashCode(mapExps.get(3)), mapExps.get(3));
+							} else if (mapExps.get(3) != null && mapExps.get(3) instanceof Term) {
+								((Term) mapExps.get(3)).setType(newMapType);
+								updateExps.put(System.identityHashCode(mapExps.get(3)), mapExps.get(3));
+							}
+							termType = newMapType;
 						}
 						map.put(System.identityHashCode(mapExps), termType);
 					} else if (symbol.equals(DataConstraintModel.cond)) {
