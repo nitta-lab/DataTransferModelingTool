@@ -14,7 +14,8 @@ public class Field extends Constant {
 	}
 	
 	public Field(String name, Type type) {
-		super(name, type);
+		super(name);
+		symbol.setSignature(new Type[] {type});
 	}
 	
 	public Field(Symbol symbol) {
@@ -22,7 +23,7 @@ public class Field extends Constant {
 	}
 	
 	public Type getType() {
-		if (symbol.getSignature().length >= 1) {
+		if (symbol.getSignature() != null && symbol.getSignature().length >= 1) {
 			return symbol.getSignature()[0];
 		}
 		return null;

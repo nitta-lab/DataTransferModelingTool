@@ -270,22 +270,23 @@ public class Term extends Expression {
 			String component0 = components[0].replace("(", "").replace(")", "");
 			String[] params = component0.split(",");
 			String exp = components[1];
+			String receiver = "";
 			if (implParamOrder == null) {
-				for (int i = 0; i < params.length; i++) {
+				receiver = children.get(0).toImplementation(sideEffects);
+				exp = exp.replace(params[0], receiver);
+				for (int i = 1; i < params.length; i++) {
 					exp = exp.replace(params[i], children.get(i).toImplementation(sideEffects));
 				}
 			} else {
-				for (int i = 0; i < params.length; i++) {
+				receiver = children.get(implParamOrder[0]).toImplementation(sideEffects);
+				exp = exp.replace(params[0], receiver);
+				for (int i = 1; i < params.length; i++) {
 					exp = exp.replace(params[i], children.get(implParamOrder[i]).toImplementation(sideEffects));
 				}
 			}
 			if (symbol.isImplWithSideEffect()) {
 				sideEffects[0] = sideEffects[0] + exp + ";\n";
-				if (implParamOrder == null) {
-					exp = children.get(0).toImplementation(new String[] {""});
-				} else {
-					exp = children.get(implParamOrder[0]).toImplementation(new String[] {""});
-				}
+				exp = receiver;
 			}
 			return exp;
 		}
@@ -308,7 +309,7 @@ public class Term extends Expression {
 				String exp = symbol.generate(getType(), childrenTypes, childrenImpl, childrenSideEffects, sideEffects);
 				if (symbol.isImplWithSideEffect()) {
 					sideEffects[0] = sideEffects[0] + exp;
-					exp = children.get(0).toImplementation(new String[] {""});	// the value of this term
+					exp = childrenImpl[0];		// the value of this term
 				}
 				return exp;
 			} else {
@@ -326,7 +327,7 @@ public class Term extends Expression {
 				String exp = symbol.generate(getType(), childrenTypes, childrenImpl, childrenSideEffects, sideEffects);
 				if (symbol.isImplWithSideEffect()) {
 					sideEffects[0] = sideEffects[0] + exp;
-					exp = children.get(implParamOrder[0]).toImplementation(new String[] {""});	// the value of this term
+					exp = childrenImpl[0];		// the value of this term
 				}
 				return exp;
 			}
@@ -335,12 +336,19 @@ public class Term extends Expression {
 			if (implParamOrder == null) {
 				return "(" + children.get(0).toImplementation(sideEffects) + symbol.toImplementation() + children.get(1).toImplementation(sideEffects) + ")";
 			} else {
-				return "(" + children.get(implParamOrder[0]).toImplementation(sideEffects) + symbol.toImplementation() + children.get(implParamOrder[1]).toImplementation(sideEffects) + ")";				
+				return "(" + children.get(implParamOrder[0]).toImplementation(sideEffects) + symbol.toImplementation() + children.get(implParamOrder[1]).toImplementation(sideEffects) + ")";
 			}
 		}
 		if ((getArity() >= 1 || getArity() == -1) && symbol.isImplMethod()) {
 			if (implParamOrder == null) {
-				String exp = children.get(0).toImplementation(sideEffects) + "." + symbol.toImplementation() + "(";
+				String exp = null;
+				String receiver = "";
+				if (children.get(0) != null) {
+					receiver = children.get(0).toImplementation(sideEffects);
+					exp = receiver + "." + symbol.toImplementation() + "(";
+				} else {
+					exp = symbol.toImplementation() + "(";
+				}
 				String delimiter = "";
 				for (int i = 1; i < children.size(); i++) {
 					Expression e = children.get(i);
@@ -350,11 +358,12 @@ public class Term extends Expression {
 				exp += ")";
 				if (symbol.isImplWithSideEffect()) {
 					sideEffects[0] = sideEffects[0] + exp + ";\n";
-					exp = children.get(0).toImplementation(new String[] {""});
+					exp = receiver;
 				}
 				return exp;
 			} else {
-				String exp = children.get(implParamOrder[0]).toImplementation(sideEffects) + "." + symbol.toImplementation() + "(";
+				String receiver = children.get(implParamOrder[0]).toImplementation(sideEffects);
+				String exp = receiver + "." + symbol.toImplementation() + "(";
 				String delimiter = "";
 				for (int i = 1; i < children.size(); i++) {
 					Expression e = children.get(implParamOrder[i]);
@@ -364,7 +373,7 @@ public class Term extends Expression {
 				exp += ")";
 				if (symbol.isImplWithSideEffect()) {
 					sideEffects[0] = sideEffects[0] + exp + ";\n";
-					exp = children.get(implParamOrder[0]).toImplementation(new String[] {""});
+					exp = receiver;
 				}
 				return exp;
 			}

@@ -57,7 +57,8 @@ public class DataConstraintModel {
 			for (String s: childrenSideEffects) {
 				sideEffect[0] += s;
 			}
-			if (childrenTypes[0].equals(typeString) && childrenTypes[1].equals(typeString)) {
+			if (childrenTypes[0] != null && childrenTypes[0].equals(typeString) 
+					&& childrenTypes[1] != null && childrenTypes[1].equals(typeString)) {
 				return children[0] + ".equals(" + children[1] + ")";
 			}
 			return "(" + children[0] + "==" + children[1] + ")";
@@ -70,7 +71,8 @@ public class DataConstraintModel {
 			for (String s: childrenSideEffects) {
 				sideEffect[0] += s;
 			}
-			if (childrenTypes[0].equals(typeString) && childrenTypes[1].equals(typeString)) {
+			if (childrenTypes[0] != null && childrenTypes[0].equals(typeString) 
+					&& childrenTypes[1] != null && childrenTypes[1].equals(typeString)) {
 				return "!" + children[0] + ".equals(" + children[1] + ")";
 			}
 			return "(" + children[0] + "!=" + children[1] + ")";
@@ -105,11 +107,12 @@ public class DataConstraintModel {
 		}
 	});
 	public static final Symbol nil = new Symbol("nil", 0, Symbol.Type.PREFIX, new Symbol.IImplGenerator() {
+		final int count[] = {0};
 		@Override
 		public String generate(Type type, Type[] childrenTypes, String[] childrenImpl, String[] childrenSideEffects, String[] sideEffect) {
 			String compType = "";
 			if (type != null) {
-				String temp = "temp_nil";
+				String temp = "temp_nil" + count[0];
 				String interfaceType = type.getInterfaceTypeName();
 				if (interfaceType.contains("<")) {
 					compType = interfaceType.substring(interfaceType.indexOf("<") + 1, interfaceType.lastIndexOf(">"));
@@ -118,12 +121,16 @@ public class DataConstraintModel {
 				if (implType.indexOf('<') >= 0) {
 					implType = implType.substring(0, implType.indexOf('<'));
 				}
-				sideEffect[0] = interfaceType + " " + temp + " = " + "new " + implType + "<" + compType + ">();\n";
+				if (sideEffect[0] == null) {
+					sideEffect[0] = "";
+				}
+				sideEffect[0] += interfaceType + " " + temp + " = " + "new " + implType + "<" + compType + ">();\n";
+				count[0]++;
 				return temp;
 			}			
 			return "new ArrayList<" + compType + ">()";
 		}
-	});
+	}, true);
 	public static final Symbol null_ = new Symbol("null", 0, Symbol.Type.PREFIX, "null", Symbol.Type.PREFIX);
 	public static final Symbol true_ = new Symbol("true", 0, Symbol.Type.PREFIX, "true", Symbol.Type.PREFIX);
 	public static final Symbol false_ = new Symbol("false", 0, Symbol.Type.PREFIX, "false", Symbol.Type.PREFIX);

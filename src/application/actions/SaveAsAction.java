@@ -65,9 +65,7 @@ public class SaveAsAction extends AbstractSystemAction {
 				lastDir = fc.getSelectedFile().getParent();
 				
 				String fileName = fc.getSelectedFile().getAbsolutePath() + extension;
-				
-				// checking file duplicates
-				if(! (fc.getSelectedFile().exists()))  editor.setCurFilePath(fileName);	
+				editor.setCurFilePath(fileName);	
 				
 				// overwriting file
 				editor.save();
