@@ -12,7 +12,8 @@ public class Parameter extends Constant {
 	}
 	
 	public Parameter(String name, Type type) {
-		super(name, type);
+		super(name);
+		symbol.setSignature(new Type[] {type});
 	}
 	
 	public Parameter(Symbol symbol) {
@@ -20,7 +21,7 @@ public class Parameter extends Constant {
 	}
 	
 	public Type getType() {
-		if (symbol.getSignature().length >= 1) {
+		if (symbol.getSignature() != null && symbol.getSignature().length >= 1) {
 			return symbol.getSignature()[0];
 		}
 		return null;
